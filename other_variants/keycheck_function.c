@@ -20,15 +20,13 @@ typedef struct keycodes_structure
     int key_code;
 }KSTR;
 
-int kbd_read(KSTR*);
-void script_crawler(int*, int*);
 int keypress_check(int key_code);
 
 int main()
 {
     while(1)
     {
-        switch(keypress_check(42)) // Release(0),Press(1),Hold(2)
+        switch(keypress_check(42)) // checks for leftshift
         {
             case 0://only released
                 printf("Key Released\n");
@@ -88,109 +86,3 @@ int keypress_check(int key_code)
         }
     }
 }
-
-int kbd_read(KSTR* kbd_array)
-{
-    FILE* key_codes_fp = fopen("c_keycodes.csv","r");
-    if(key_codes_fp == NULL)
-    {
-
-        return 1;
-        fclose(key_codes_fp);
-    }
-    char buffer[700];
-    int row=0;
-    while(fgets(buffer,700,key_codes_fp))
-    {
-        strcpy(kbd_array[row].key_name,strtok(buffer,","));
-        kbd_array[row].key_code = atoi(strtok(NULL,","));
-        row++;
-    }
-    fclose(key_codes_fp);
-    return 0;
-}
-
-void script_crawler(int* lshift, int* rshift)
-{
-    const char *kbd_path = "/dev/input/event11";
-    struct input_event ev;
-    int fd;
-    ssize_t n;
-    KSTR kbd_array[85];
-    int kbd_array_status;
-    kbd_array_status = kbd_read(kbd_array);
-    fd = open(kbd_path,O_RDONLY);
-    if(fd == -1)
-    {
-        printf("Failed to open required files. Terminating.\n");
-        exit(0);
-    }
-    pid_t proc_id = fork();
-
-    if(proc_id == 0)
-    {
-
-    }
-    else if (proc_id > 0)
-    {
-
-    }
-    else
-    {
-        printf("Fork failed\n");
-        exit(0);
-    }
-    return;
-}
-// void script_crawler(int* lshift, int* rshift)
-// {
-//     const char *kbd_path = "/dev/input/event11";
-//     struct input_event ev;
-//     int fd;
-//     ssize_t n;
-//     KSTR kbd_array[85];
-//     int kbd_array_status;
-//     kbd_array_status = kbd_read(kbd_array);
-//     fd = open(kbd_path,O_RDONLY);
-//     if(fd == -1)
-//     {
-//         printf("Failed to open required files. Terminating.\n");
-//         exit(0);
-//     }
-//     while(1)
-//     {
-//         if(!(*lshift) || !(*rshift))
-//         {
-//             printf("stopped");
-//             return;
-//         }
-//         n = read(fd, &ev, sizeof(ev));
-//         if(n == (ssize_t)-1)
-//         {
-//             if(errno = EINTR)//Read into this
-//                 continue;
-//             else
-//                 break;
-//         }
-//         if (n != sizeof(ev))
-//         {
-//             errno = EIO;//Read into this
-//             continue;
-//         }
-//         if((ev.type == EV_KEY) && (ev.value <=2 && ev.value >=0))
-//         {
-//             if((ev.code == 42 && ev.value == 0))
-//             {
-//                 *lshift = 0;
-//             }
-//             if((ev.code == 54 && ev.value == 0))
-//             {
-//                 *rshift = 0;
-//             }
-//         }
-//         printf("Inside script_crawler\n"); // replace this with some script ting
-//     }
-
-//     close(fd);
-//     return;
-// }
